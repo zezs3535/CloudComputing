@@ -30,7 +30,7 @@ public class awsTest {
 					+ "location (~/.aws/credentials), and is in valid format.", e);
 
 		}
-		ec2 = AmazonEC2ClientBuilder.standard().withCredentials(credentialsProvider).withRegion("us-east-2") /*
+		ec2 = AmazonEC2ClientBuilder.standard().withCredentials(credentialsProvider).withRegion("us-east-1b") /*
 																												 * check
 																												 * the
 																												 * region
@@ -45,7 +45,7 @@ public static void main(String[] args) throws Exception {
 	init();
 	Scanner menu = new Scanner(System.in);
 	Scanner id_string = new Scanner(System.in);
-	int number = 0;
+	
 	while(true)
 	{
 		System.out.println(" ");
@@ -63,6 +63,7 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 99. quit ");
 		System.out.println("------------------------------------------------------------");
 		System.out.print("Enter an integer: ");
+		int number = menu.nextInt();
 		switch(number) {
 		case 1:
 
