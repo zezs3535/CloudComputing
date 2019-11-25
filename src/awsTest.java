@@ -6,6 +6,7 @@ import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 
 public class awsTest {
@@ -30,21 +31,14 @@ public class awsTest {
 					+ "location (~/.aws/credentials), and is in valid format.", e);
 
 		}
-		ec2 = AmazonEC2ClientBuilder.standard().withCredentials(credentialsProvider).withRegion("us-east-1b") /*
-																												 * check
-																												 * the
-																												 * region
-																												 * at
-																												 * AWS
-																												 * console
-																												 */
+		ec2 = AmazonEC2ClientBuilder.standard().withCredentials(credentialsProvider).withRegion("us-east-1") 
+				/* check the region at AWS console*/
 				.build();
 	}
 
 public static void main(String[] args) throws Exception {
 	init();
 	Scanner menu = new Scanner(System.in);
-	Scanner id_string = new Scanner(System.in);
 	
 	while(true)
 	{
@@ -66,9 +60,10 @@ public static void main(String[] args) throws Exception {
 		int number = menu.nextInt();
 		switch(number) {
 		case 1:
-
 			listInstances();
 			break;
+		case 99:
+			System.exit(0);
 		}
 	}
 }
@@ -80,7 +75,7 @@ public static void listInstances() {
 		while (!done) {
 			DescribeInstancesResult response = ec2.describeInstances(request);
 			for (Reservation reservation : response.getReservations()) {
-				for (com.amazonaws.services.ec2.model.Instance instance : reservation.getInstances()) {
+				for (Instance instance : reservation.getInstances()) {
 					System.out.printf(
 							"[id] %s, " + "[AMI] %s, " + "[type] %s, " + "[state] %10s, " + "[monitoring state] %s",
 							instance.getInstanceId(), instance.getImageId(), instance.getInstanceType(),
@@ -90,6 +85,7 @@ public static void listInstances() {
 			}
 			request.setNextToken(response.getNextToken());
 			if (response.getNextToken() == null) {
+				System.out.println("¾ø´Ù!");
 				done = true;
 			}
 		}
