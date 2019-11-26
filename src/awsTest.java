@@ -60,16 +60,23 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" 3. start instance 4. available regions ");
 		System.out.println(" 5. stop instance 6. create instance ");
 		System.out.println(" 7. reboot instance 8. list images ");
+		System.out.println(" 9. terminate instance 10. x");
 		System.out.println(" 99. quit ");
 		System.out.println("------------------------------------------------------------");
 		System.out.print("Enter an integer: ");
 		int number = menu.nextInt();
 		switch(number) {
 		case 1:
+			System.out.println();
 			listInstances();
 			break;
 		case 6:
+			System.out.println();
 			CreateInstances();
+			break;
+		case 9:
+			System.out.println();
+			TerminateInstances();
 			break;
 		case 99:
 			System.exit(0);
@@ -101,7 +108,7 @@ public static void listInstances() {
 }
 
 public static void CreateInstances() {
-	System.out.println("Create instances....");
+	System.out.println("Create instances");
 	Scanner menu=new Scanner(System.in);
 	System.out.println("사용할 이미지를 입력하세요 : ");
 	String imageId=menu.nextLine();
@@ -109,15 +116,54 @@ public static void CreateInstances() {
 	String keyName=menu.nextLine();
 	//String instanceType=menu.nextLine();
 	
-	RunInstancesRequest run_request = new RunInstancesRequest()
-		    .withImageId(imageId)
-		    .withInstanceType(InstanceType.T2Micro)
-		    .withKeyName(keyName)
-		    .withMaxCount(1)
-		    .withMinCount(1);
-		RunInstancesResult run_response = ec2.runInstances(run_request);
-		
-		String reservation_id = run_response.getReservation().getInstances().get(0).getInstanceId();
+	try {
+		RunInstancesRequest run_request = new RunInstancesRequest()
+			    .withImageId(imageId)
+			    .withInstanceType(InstanceType.T2Micro)
+			    .withKeyName(keyName)
+			    .withMaxCount(1)
+			    .withMinCount(1);
+			RunInstancesResult run_response = ec2.runInstances(run_request);
+			
+			String reservation_id = run_response.getReservation().getInstances().get(0).getInstanceId();
+			
+			System.out.printf("%s 이미지를 사용하여 %s 인스턴스 생성 완료",imageId,reservation_id);
+	}
+	catch (Exception e) {
+		throw new AmazonClientException("인스턴스 생성에 필요한 인자를 잘못 입력", e);
+	}
+}
+
+public static void TerminateInstances() {
+	System.out.println("Terminate instances");
+	Scanner menu=new Scanner(System.in);
+	
+	System.out.println("Instance 목록");
+	System.out.println("------------------------------------------------------");
+	boolean done = false;
+	DescribeInstancesRequest request = new DescribeInstancesRequest();
+	while (!done) {
+		DescribeInstancesResult response = ec2.describeInstances(request);
+		for (Reservation reservation : response.getReservations()) {
+			for (Instance instance : reservation.getInstances()) {
+				System.out.printf(
+						"[id] %s, " + "[AMI] %s, ", instance.getInstanceId(), instance.getImageId());
+			}
+			System.out.println();
+		}
+		request.setNextToken(response.getNextToken());
+		if (response.getNextToken() == null) {
+			System.out.println("------------------------------------------------------");
+			done = true;
+		}
+	}
+	System.out.println("삭제할 인스턴스의 id : ");
+	String instanceName=menu.nextLine();
+	
+	TerminateInstancesRequest tRequest = new TerminateInstancesRequest().withInstanceIds(instanceName);
+	ec2.terminateInstances(tRequest);
+	
+	System.out.printf("%s 인스턴스 삭제 완료",instanceName);
 }
 }
 
