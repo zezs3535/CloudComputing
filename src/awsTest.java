@@ -147,7 +147,9 @@ public static void TerminateInstances() {
 		for (Reservation reservation : response.getReservations()) {
 			for (Instance instance : reservation.getInstances()) {
 				System.out.printf(
-						"[id] %s, " + "[AMI] %s, ", instance.getInstanceId(), instance.getImageId());
+						"[id] %s, " + "[AMI] %s, " + "[type] %s, " + "[state] %10s, " + "[monitoring state] %s",
+						instance.getInstanceId(), instance.getImageId(), instance.getInstanceType(),
+						instance.getState().getName(), instance.getMonitoring().getState());
 			}
 			System.out.println();
 		}
