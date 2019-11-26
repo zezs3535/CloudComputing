@@ -1,3 +1,4 @@
+import java.awt.Menu;
 import java.util.Scanner;
 
 import com.amazonaws.AmazonClientException;
@@ -8,6 +9,11 @@ import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
+import com.amazonaws.services.ec2.model.InstanceType;
+import com.amazonaws.services.ec2.model.RunInstancesRequest;
+import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 
 public class awsTest {
 
@@ -62,6 +68,9 @@ public static void main(String[] args) throws Exception {
 		case 1:
 			listInstances();
 			break;
+		case 6:
+			CreateInstances();
+			break;
 		case 99:
 			System.exit(0);
 		}
@@ -85,9 +94,30 @@ public static void listInstances() {
 			}
 			request.setNextToken(response.getNextToken());
 			if (response.getNextToken() == null) {
-				System.out.println("없다!");
+				System.out.println("끝!");
 				done = true;
 			}
 		}
-	}
 }
+
+public static void CreateInstances() {
+	System.out.println("Create instances....");
+	Scanner menu=new Scanner(System.in);
+	System.out.println("사용할 이미지를 입력하세요 : ");
+	String imageId=menu.nextLine();
+	System.out.println("사용할 Key를 입력하세요 : ");
+	String keyName=menu.nextLine();
+	//String instanceType=menu.nextLine();
+	
+	RunInstancesRequest run_request = new RunInstancesRequest()
+		    .withImageId(imageId)
+		    .withInstanceType(InstanceType.T2Micro)
+		    .withKeyName(keyName)
+		    .withMaxCount(1)
+		    .withMinCount(1);
+		RunInstancesResult run_response = ec2.runInstances(run_request);
+		
+		String reservation_id = run_response.getReservation().getInstances().get(0).getInstanceId();
+}
+}
+
