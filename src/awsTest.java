@@ -190,6 +190,7 @@ public static void CreateInstances() {	//인스턴스 생성
 }
 public static void RebootInstances() {	//인스턴스 재시작
 	Scanner menu=new Scanner(System.in);
+	System.out.println("재시작 할 인스턴스의 id를 입력하세요 : ");
 	String instanceId=menu.nextLine();
 	
 	RebootInstancesRequest request=new RebootInstancesRequest().withInstanceIds(instanceId);	//재시작 할 인스턴스의 Id를 받아서 객체 생성
