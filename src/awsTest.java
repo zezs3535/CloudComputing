@@ -10,13 +10,15 @@ import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.StartInstancesRequest;
+import com.amazonaws.services.ec2.model.StopInstancesRequest;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
-import com.amazonaws.services.ec2.model.Image;
 public class awsTest {
 
 	static AmazonEC2 ec2;
@@ -66,6 +68,14 @@ public static void main(String[] args) throws Exception {
 			System.out.println();
 			AvailableZones();
 			break;
+		case 3:
+			System.out.println();
+			StartInstances();
+			break;
+		case 5:
+			System.out.println();
+			StoppingInstances();
+			break;
 		case 6:
 			System.out.println();
 			CreateInstances();
@@ -113,6 +123,24 @@ public static void AvailableZones() {
 		System.out.printf("[Zone name : %s]"+"[Zone id : %s]",zone.getZoneName(),zone.getZoneId());
 		System.out.println();
 	}
+}
+public static void StartInstances() {
+	System.out.println("Start instances");
+	Scanner menu = new Scanner(System.in);
+	System.out.print("시작할 인스턴스의 id를 입력하세요 : ");
+	String instanceId=menu.nextLine();
+	StartInstancesRequest sRequest=new StartInstancesRequest().withInstanceIds(instanceId);
+	ec2.startInstances(sRequest);
+	System.out.printf("%s 인스턴스 시작 완료",instanceId);
+}
+public static void StoppingInstances() {
+	System.out.println("Stop instances");
+	Scanner menu=new Scanner(System.in);
+	System.out.print("중지할 인스턴스의 id를 입력하세요 : ");
+	String instanceId=menu.nextLine();
+	StopInstancesRequest stopRequest=new StopInstancesRequest().withInstanceIds(instanceId);
+	ec2.stopInstances(stopRequest);
+	System.out.printf("%s 인스턴스 중지 완료",instanceId);
 }
 public static void CreateInstances() {
 	System.out.println("Create instances");
