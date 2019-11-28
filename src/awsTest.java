@@ -1,33 +1,27 @@
-import java.awt.Menu;
+import java.util.Collection;
 import java.util.Scanner;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
+import com.amazonaws.services.ec2.model.AvailabilityZone;
+import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
+import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.InstanceType;
+import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
-import com.amazonaws.services.ec2.model.Tag;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
-
+import com.amazonaws.services.ec2.model.Image;
 public class awsTest {
 
-	/*
-	 * Cloud Computing, Data Computing Laboratory Department of Computer Science
-	 * Chungbuk National University
-	 */
 	static AmazonEC2 ec2;
 
 	private static void init() throws Exception {
-		/*
-		 * The ProfileCredentialsProvider will return your [default] credential profile
-		 * by reading from the credentials file located at (~/.aws/credentials).
-		 */
 		ProfileCredentialsProvider credentialsProvider = new ProfileCredentialsProvider();
 		try {
 			credentialsProvider.getCredentials();
@@ -38,7 +32,6 @@ public class awsTest {
 
 		}
 		ec2 = AmazonEC2ClientBuilder.standard().withCredentials(credentialsProvider).withRegion("us-east-1") 
-				/* check the region at AWS console*/
 				.build();
 	}
 
@@ -52,9 +45,8 @@ public static void main(String[] args) throws Exception {
 		System.out.println(" ");
 		System.out.println("------------------------------------------------------------");
 		System.out.println(" Amazon AWS Control Panel using SDK ");
-		System.out.println(" ");
-		System.out.println(" Cloud Computing, Computer Science Department ");
-		System.out.println(" at Chungbuk National University ");
+		System.out.println(" 2015041032 장찬용 ");
+		System.out.println(" Chungbuk National University");
 		System.out.println("------------------------------------------------------------");
 		System.out.println(" 1. list instance 2. available zones ");
 		System.out.println(" 3. start instance 4. available regions ");
@@ -70,9 +62,17 @@ public static void main(String[] args) throws Exception {
 			System.out.println();
 			listInstances();
 			break;
+		case 2:
+			System.out.println();
+			AvailableZones();
+			break;
 		case 6:
 			System.out.println();
 			CreateInstances();
+			break;
+		case 8:
+			System.out.println();
+			ImageList();
 			break;
 		case 9:
 			System.out.println();
@@ -107,6 +107,13 @@ public static void listInstances() {
 		}
 }
 
+public static void AvailableZones() {
+	DescribeAvailabilityZonesResult zRequest = ec2.describeAvailabilityZones();
+	for(AvailabilityZone zone:zRequest.getAvailabilityZones()) {
+		System.out.printf("[Zone name : %s]"+"[Zone id : %s]",zone.getZoneName(),zone.getZoneId());
+		System.out.println();
+	}
+}
 public static void CreateInstances() {
 	System.out.println("Create instances");
 	Scanner menu=new Scanner(System.in);
@@ -131,6 +138,19 @@ public static void CreateInstances() {
 	}
 	catch (Exception e) {
 		throw new AmazonClientException("인스턴스 생성에 필요한 인자를 잘못 입력", e);
+	}
+}
+
+public static void ImageList() {
+	String owner = "194836130746";
+
+	DescribeImagesRequest request = new DescribeImagesRequest().withOwners(owner);
+	Collection<Image> images = ec2.describeImages(request).getImages();
+	for (Image img : images) {
+		System.out.printf("[ImageID] %s, [Name] %s,[State] %s, [Owner] %s",img.getImageId(),
+				img.getName(),img.getState(),img.getOwnerId());
+		System.out.println();
+
 	}
 }
 
