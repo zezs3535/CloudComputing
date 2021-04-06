@@ -6,7 +6,7 @@ public class Cl
 		try{
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		Connection con=DriverManager.getConnection(
-		"jdbc:mysql://192.168.56.101:4567/madang","jcy","1234");
+		"jdbc:mysql://192.168.56.101:4567/madang","아이디","비밀번호");
 		Statement stmt=con.createStatement();
 		ResultSet rs=stmt.executeQuery("SELECT * FROM Book");
 		while(rs.next())
